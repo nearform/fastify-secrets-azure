@@ -1,0 +1,66 @@
+{
+  "name": "fastify-secrets-azure",
+  "version": "1.0.0",
+  "description": "Fastify secrets plugin for Azure Key Vault",
+  "main": "lib/fastify-secrets-azure.js",
+  "scripts": {
+    "lint": "eslint lib test",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:staged": "lint-staged",
+    "test": "tap --coverage-report=html --coverage-report=text --no-browser test",
+    "test:ci": "tap --no-color --coverage-report=json --coverage-report=text test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nearform/fastify-secrets-azure.git"
+  },
+  "author": "NearForm Ltd",
+  "license": "Apache-2.0",
+  "keywords": [
+    "fastify",
+    "secrets"
+  ],
+  "bugs": {
+    "url": "https://github.com/nearform/fastify-secrets-azure/issues"
+  },
+  "homepage": "https://github.com/nearform/fastify-secrets-azure#readme",
+  "engines": {
+    "node": ">= 12.13.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-config-standard": "^16.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^5.0.0",
+    "fastify": "^3.6.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
+    "prettier": "^2.1.2",
+    "proxyquire": "^2.1.3",
+    "sinon": "^9.2.0",
+    "tap": "^14.10.8",
+    "uuid": "^8.3.1"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:staged",
+      "pre-push": "npm run lint && npm run test"
+    }
+  },
+  "dependencies": {
+    "@azure/identity": "^1.2.0",
+    "@azure/keyvault-secrets": "^4.1.0",
+    "fastify-secrets-core": "^1.1.0"
+  }
+}
