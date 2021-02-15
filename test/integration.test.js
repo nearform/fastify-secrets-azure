@@ -15,7 +15,10 @@ const SECRET_CONTENT = uuid.v4()
 const vaultName = process.env.AZURE_VAULT_NAME
 
 const credential = new DefaultAzureCredential()
-const client = new SecretClient(`https://${vaultName}.vault.azure.net`, credential)
+const client = new SecretClient(
+  `https://${vaultName}.vault.azure.net`,
+  credential
+)
 
 function createSecret() {
   return client.setSecret(SECRET_NAME, SECRET_CONTENT)
@@ -28,7 +31,7 @@ teardown(async function deleteSecret() {
 })
 
 test('integration', async (t) => {
-  t.plan(1)
+  t.setTimeout(60 * 1000)
 
   await createSecret()
 

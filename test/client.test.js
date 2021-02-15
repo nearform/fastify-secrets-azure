@@ -41,7 +41,10 @@ test('options', async (t) => {
     // eslint-disable-next-line no-unused-vars
     const _ = new AzureClient({ vaultName: 'vault-name' })
 
-    sinon.assert.calledWith(secretClientStub, `https://vault-name.vault.azure.net`)
+    sinon.assert.calledWith(
+      secretClientStub,
+      `https://vault-name.vault.azure.net`
+    )
   })
 
   t.test('uses default credentials when no credentials provided', async (t) => {
