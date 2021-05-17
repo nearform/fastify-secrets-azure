@@ -7,8 +7,8 @@
     "lint": "eslint lib test",
     "lint:fix": "npm run lint -- --fix",
     "lint:staged": "lint-staged",
-    "test": "tap --coverage-report=html --coverage-report=text --no-browser test",
-    "test:ci": "tap --no-color --coverage-report=json --coverage-report=text test"
+    "test": "tap --coverage-report=html --coverage-report=text --no-browser --timeout=90 test",
+    "test:ci": "tap --no-color --coverage-report=json --coverage-report=text --timeout=90 test"
   },
   "repository": {
     "type": "git",
