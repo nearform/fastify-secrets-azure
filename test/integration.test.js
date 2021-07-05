@@ -31,30 +31,26 @@ teardown(async function deleteSecret() {
 })
 
 test('integration', async (t) => {
-  t.setTimeout(60 * 1000)
+  t.test('decorates fastify with secret content', async (t) => {
+    await createSecret()
 
-  await createSecret()
+    const fastify = Fastify({
+      logger: process.env.TEST_LOGGER || false
+    })
 
-  const fastify = Fastify({
-    logger: process.env.TEST_LOGGER || false
-  })
+    fastify.register(FastifySecrets, {
+      secrets: {
+        test: SECRET_NAME
+      },
+      clientOptions: {
+        vaultName
+      }
+    })
 
-  fastify.register(FastifySecrets, {
-    secrets: {
-      test: SECRET_NAME
-    },
-    clientOptions: {
-      vaultName
-    }
-  })
+    await fastify.ready()
 
-  await fastify.ready()
-
-  t.same(
-    fastify.secrets,
-    {
+    t.same(fastify.secrets, {
       test: SECRET_CONTENT
-    },
-    'decorates fastify with secret content'
-  )
+    })
+  })
 })
