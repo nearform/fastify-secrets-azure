@@ -8,7 +8,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint:staged": "lint-staged",
     "test": "tap --coverage-report=html --coverage-report=text --no-browser --timeout=240 test",
-    "test:ci": "tap --no-color --coverage-report=json --coverage-report=text test",
+    "test:ci": "tap --no-color --coverage-report=json --coverage-report=text --timeout=240 test",
     "prepare": "husky install"
   },
   "repository": {
