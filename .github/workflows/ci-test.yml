@@ -33,7 +33,7 @@ jobs:
                               "managementEndpointUrl": "https://management.core.windows.net/"
                               }'
           LOCATION: "westeurope"
-          KEYVAULT_NAME: "ff-kvX"
+          KEYVAULT_NAME: "ff-kv-$(date +'%Y%m%d%H%M%S')"
           RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
         #run: echo $AZURE_CREDENTIALS
         uses: azure/login@v1
@@ -43,7 +43,7 @@ jobs:
           
       - env:
           LOCATION: "westeurope"
-          KEYVAULT_NAME: "ff-kvX"
+          KEYVAULT_NAME: "ff-kv-$(date +'%Y%m%d%H%M%S')"
           RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
         uses: azure/CLI@v1
         with:
@@ -57,17 +57,17 @@ jobs:
           AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
           AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
           AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
-          AZURE_VAULT_NAME: "ff-kvX"
+          AZURE_VAULT_NAME: "ff-kv-$(date +'%Y%m%d%H%M%S')"
         run: npm run test:ci
 
       - env:
-          KEYVAULT_NAME: "ff-kvX"
+          KEYVAULT_NAME: "ff-kv-$(date +'%Y%m%d%H%M%S')"
           RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
         uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
-            az keyvault delete --name ${{ env.KEYVAULT_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
+            az keyvault purge --name ${{ env.KEYVAULT_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
             #--no-wait
 
   automerge:
