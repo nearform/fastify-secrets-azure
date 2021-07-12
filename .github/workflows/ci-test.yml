@@ -38,7 +38,8 @@ jobs:
           creds: ${{ env.AZURE_CREDENTIALS }}
           #creds: ${{ secrets.AZURE_CREDENTIALS }}
       - run: |
-          echo ::set-env name=NDATE::$(date +'%Y%m%d%H%M%S')
+          #echo ::set-env name=NDATE::$(date +'%Y%m%d%H%M%S')
+          echo "NDATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
       - env:
           LOCATION: "westeurope"
           KEYVAULT_NAME: "ffkv"
