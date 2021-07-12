@@ -24,7 +24,7 @@ jobs:
       uses: azure/login@v1
       with:
         #creds: ${{ secrets.AZURE_CREDENTIALS }}
-        creds: {
+        creds: "{
                  "clientId": "4af8af72-ce1a-440b-a41c-cee649199449",
                  "clientSecret": "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O",
                  "subscriptionId": "7d149fba-cc81-4bab-8461-ea09919d78cd",
@@ -35,7 +35,7 @@ jobs:
                  "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
                  "galleryEndpointUrl": "https://gallery.azure.com/",
                  "managementEndpointUrl": "https://management.core.windows.net/"
-               }    
+               }"    
 
     - name: Azure CLI script
       uses: azure/CLI@v1
