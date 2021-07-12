@@ -32,42 +32,40 @@ jobs:
                               "galleryEndpointUrl": "https://gallery.azure.com/",
                               "managementEndpointUrl": "https://management.core.windows.net/"
                               }'
-          LOCATION: "westeurope"
-          KEYVAULT_NAME: "ff-kv-$(date +'%Y%m%d%H%M%S')"
-          RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
         #run: echo $AZURE_CREDENTIALS
         uses: azure/login@v1
         with:
           creds: ${{ env.AZURE_CREDENTIALS }}
           #creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
+      - run: |
+          echo ::set-env name=NDATE::$(date +'%Y%m%d%H%M%S')
       - env:
           LOCATION: "westeurope"
-          KEYVAULT_NAME: "ff-kv-$(date +'%Y%m%d%H%M%S')"
+          KEYVAULT_NAME: "ffkv"
           RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
         uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
             az account show
-            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify
+            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}_${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
+            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}_${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify
 
       - env:
           AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
           AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
           AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
-          AZURE_VAULT_NAME: "ff-kv-$(date +'%Y%m%d%H%M%S')"
+          AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}_${{ env.NDATE }}
         run: npm run test:ci
 
       - env:
-          KEYVAULT_NAME: "ff-kv-$(date +'%Y%m%d%H%M%S')"
+          KEYVAULT_NAME: "ffkv"
           RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
         uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
-            az keyvault purge --name ${{ env.KEYVAULT_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
+            az keyvault purge --name ${{ env.KEYVAULT_NAME }}_${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
             #--no-wait
 
   automerge:
