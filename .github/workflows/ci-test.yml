@@ -17,8 +17,8 @@ jobs:
       - uses: actions/setup-node@v2.2.0
         with:
           node-version: ${{ matrix.node-version }}
-      #- run: npm install
-      #- run: npm run lint
+      - run: npm install
+      - run: npm run lint
       - env:
           AZURE_CREDENTIALS: '{
                               "clientId": "4af8af72-ce1a-440b-a41c-cee649199449",
@@ -39,6 +39,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ env.AZURE_CREDENTIALS }}
+          #creds: ${{ secrets.AZURE_CREDENTIALS }}
           
       - env:
           LOCATION: "westeurope"
@@ -50,3 +51,28 @@ jobs:
           inlineScript: |
             az account show
             az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
+
+      - env:
+          AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
+          AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
+          AZURE_CLIENT_SECRET: ""mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O""
+          AZURE_VAULT_NAME: "ff-kvX"
+        run: npm run test:ci
+
+      - env:
+          KEYVAULT_NAME: "ff-kvX"
+          RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.0.72
+          inlineScript: |
+            az keyvault delete --name ${{ env.KEYVAULT_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
+            #--no-wait
+
+  automerge:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
