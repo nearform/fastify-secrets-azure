@@ -33,13 +33,11 @@ jobs:
                               "managementEndpointUrl": "https://management.core.windows.net/"
                               }'
 
-      - name: Azure Login
-        uses: azure/login@v1
+      - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           
-      - name: Azure CLI script
-        uses: azure/CLI@v1
+      - uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
