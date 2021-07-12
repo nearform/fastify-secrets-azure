@@ -49,13 +49,13 @@ jobs:
           inlineScript: |
             az account show
             az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify
+            #az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify
 
       - env:
           AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
           AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
           AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
-          AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}_${{ env.NDATE }}
+          AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }}
         run: npm run test:ci
 
       - env:
