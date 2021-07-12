@@ -1,5 +1,6 @@
 ---
 name: CITEST
+# Commenting out to add workflow dispatch
 #on: [push, pull_request]
 on:
   workflow_dispatch:
