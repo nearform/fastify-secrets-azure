@@ -32,9 +32,10 @@ jobs:
                               "galleryEndpointUrl": "https://gallery.azure.com/",
                               "managementEndpointUrl": "https://management.core.windows.net/"
                               }'
-        uses: azure/login@v1
-        with:
-          creds: $AZURE_CREDENTIALS
+        run: echo $AZURE_CREDENTIALS
+        #uses: azure/login@v1
+        #with:
+        #  creds: $AZURE_CREDENTIALS
           
       - uses: azure/CLI@v1
         with:
