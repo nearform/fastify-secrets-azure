@@ -40,7 +40,11 @@ jobs:
         with:
           creds: ${{ env.AZURE_CREDENTIALS }}
           
-      - uses: azure/CLI@v1
+      - env:
+          LOCATION: "westeurope"
+          KEYVAULT_NAME: "ff-kvX"
+          RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
+        uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
