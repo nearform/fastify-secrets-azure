@@ -32,6 +32,9 @@ jobs:
                               "galleryEndpointUrl": "https://gallery.azure.com/",
                               "managementEndpointUrl": "https://management.core.windows.net/"
                               }'
+          LOCATION: "westeurope"
+          KEYVAULT_NAME: "ff-kvX"
+          RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
         #run: echo $AZURE_CREDENTIALS
         uses: azure/login@v1
         with:
@@ -42,3 +45,4 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             az account show
+            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
