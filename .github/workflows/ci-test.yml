@@ -55,7 +55,7 @@ jobs:
       - env:
           AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
           AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
-          AZURE_CLIENT_SECRET: ""mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O""
+          AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
           AZURE_VAULT_NAME: "ff-kvX"
         run: npm run test:ci
 
