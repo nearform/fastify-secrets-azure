@@ -1,5 +1,5 @@
 ---
-name: CI
+name: CITEST
 #on: [push, pull_request]
 on:
   workflow_dispatch:
