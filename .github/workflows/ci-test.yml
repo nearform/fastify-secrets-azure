@@ -17,8 +17,8 @@ jobs:
       - uses: actions/setup-node@v2.2.0
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm run lint
+      #- run: npm install
+      #- run: npm run lint
       - env:
           AZURE_CREDENTIALS: '{
                               "clientId": "4af8af72-ce1a-440b-a41c-cee649199449",
@@ -35,7 +35,7 @@ jobs:
         #run: echo $AZURE_CREDENTIALS
         uses: azure/login@v1
         with:
-          creds: ${AZURE_CREDENTIALS}
+          creds: ${{ env.AZURE_CREDENTIALS }}
           
       - uses: azure/CLI@v1
         with:
