@@ -51,7 +51,7 @@ jobs:
           inlineScript: |
             az account show
             az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
-            az keyvault set-policy --key-permissions create decrypt delete encrypt get import list purge recover restore update verify
+            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify
 
       - env:
           AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
