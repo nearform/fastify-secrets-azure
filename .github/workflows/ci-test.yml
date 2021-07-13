@@ -21,6 +21,7 @@ jobs:
       - run: npm install
       - run: npm run lint
       - env:
+          # To be removed if AZURE_CREDS can be added as github secret
           AZURE_CREDENTIALS: '{
                               "clientId": "4af8af72-ce1a-440b-a41c-cee649199449",
                               "clientSecret": "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O",
@@ -36,6 +37,7 @@ jobs:
         #run: echo $AZURE_CREDENTIALS
         uses: azure/login@v1
         with:
+          # To be changed if AZURE_CREDS can be added as github secret
           creds: ${{ env.AZURE_CREDENTIALS }}
           #creds: ${{ secrets.AZURE_CREDENTIALS }}
       - run: |
@@ -51,21 +53,19 @@ jobs:
           inlineScript: |
             az account show
             az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --enable-soft-delete true
-            #az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId' >> $GITHUB_ENV
-            #az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --upn myApp
-            echo "OBJECT_ID=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
+            #echo "OBJECT_ID=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
 
       # - run: |
       #     #echo "OBJECT_ID=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
       #     echo $GITHUB_ENV
 
-      - uses: azure/CLI@v1
-        with:
-          azcliversion: 2.0.72
-          inlineScript: |
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
+      # - uses: azure/CLI@v1
+      #   with:
+      #     azcliversion: 2.0.72
+      #     inlineScript: |
+      #       az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
+      #       az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
+      #       az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
 
       - env:
           AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
@@ -79,7 +79,7 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             az keyvault delete --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
-            #az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
+            az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
             #--no-wait
             #az keyvault list
 
