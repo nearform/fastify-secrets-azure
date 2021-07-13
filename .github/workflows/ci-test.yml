@@ -55,9 +55,9 @@ jobs:
             #az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --upn myApp
             echo "OBJECT_ID=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
 
-      - run: |
-          #echo "OBJECT_ID=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
-          echo $GITHUB_ENV
+      # - run: |
+      #     #echo "OBJECT_ID=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
+      #     echo $GITHUB_ENV
 
       - uses: azure/CLI@v1
         with:
@@ -65,25 +65,26 @@ jobs:
           inlineScript: |
             az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --object-id ${{ env.OBJECT_ID }}
 
-      # - env:
-      #     AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
-      #     AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
-      #     AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
-      #     AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }}
-      #   run: npm run test:ci
+      - env:
+          AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
+          AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
+          AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
+          AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }}
+        run: npm run test:ci
 
-  #     - uses: azure/CLI@v1
-  #       with:
-  #         azcliversion: 2.0.72
-  #         inlineScript: |
-  #           #az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
-  #           #--no-wait
-  #           az keyvault list
+      - uses: azure/CLI@v1
+        with:
+          azcliversion: 2.0.72
+          inlineScript: |
+            az keyvault delete --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
+            #az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
+            #--no-wait
+            #az keyvault list
 
-  # automerge:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: fastify/github-action-merge-dependabot@v2.2.0
-  #       with:
-  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  automerge:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
