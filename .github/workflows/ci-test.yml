@@ -81,7 +81,7 @@ jobs:
           inlineScript: |
             az keyvault delete --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
             # Since the npm script purges the secret, this is not required unless purge action is removed from npm job
-            az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
+            az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --location ${{ env.LOCATION }}
             # The delete keyvault action should be removed from the npm and let the azure CLI take care of it, we can add the option --no-wait if needed
             #--no-wait
 
