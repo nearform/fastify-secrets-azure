@@ -50,30 +50,28 @@ jobs:
           inlineScript: |
             az account show
             az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --upn myApp
-
-      - env:
-          AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
-          AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
-          AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
-          AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }}
-        run: npm run test:ci
-
-      - env:
-          KEYVAULT_NAME: "ffkv"
-          RESOURCE_GROUP: "DevOps_BenchTesting_MA_Jun21"
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.0.72
-          inlineScript: |
-            #az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
-            #--no-wait
             az keyvault list
+            #az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --upn myApp
 
-  automerge:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: fastify/github-action-merge-dependabot@v2.2.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - env:
+      #     AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
+      #     AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
+      #     AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
+      #     AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }}
+      #   run: npm run test:ci
+
+  #     - uses: azure/CLI@v1
+  #       with:
+  #         azcliversion: 2.0.72
+  #         inlineScript: |
+  #           #az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
+  #           #--no-wait
+  #           az keyvault list
+
+  # automerge:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: fastify/github-action-merge-dependabot@v2.2.0
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
