@@ -50,8 +50,17 @@ jobs:
           inlineScript: |
             az account show
             az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
-            az keyvault list
+            #az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId' >> $GITHUB_ENV
             #az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --upn myApp
+
+      - run: |
+          echo "OBJECT_ID=az keyvault list | jq '.[0].properties.accessPolicies[0].objectId' >> $GITHUB_ENV
+
+      - uses: azure/CLI@v1
+        with:
+          azcliversion: 2.0.72
+          inlineScript: |
+            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --object-id ${{ env.OBJECT_ID }}
 
       # - env:
       #     AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
