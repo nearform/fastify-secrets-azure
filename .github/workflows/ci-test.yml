@@ -34,7 +34,6 @@ jobs:
                               "galleryEndpointUrl": "https://gallery.azure.com/",
                               "managementEndpointUrl": "https://management.core.windows.net/"
                               }'
-        #run: echo $AZURE_CREDENTIALS
         uses: azure/login@v1
         with:
           # To be changed if AZURE_CREDS can be added as github secret
@@ -75,6 +74,25 @@ jobs:
       #     AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }}
       #   run: npm run test:ci
 
+      - env:
+          # To be removed if AZURE_CREDS can be added as github secret
+          AZURE_CREDENTIALS: '{
+                              "clientId": "4af8af72-ce1a-440b-a41c-cee649199449",
+                              "clientSecret": "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O",
+                              "subscriptionId": "7d149fba-cc81-4bab-8461-ea09919d78cd",
+                              "tenantId": "8dcc1c85-50c8-41bb-ba73-be0bf36f827f",
+                              "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
+                              "resourceManagerEndpointUrl": "https://management.azure.com/",
+                              "activeDirectoryGraphResourceId": "https://graph.windows.net/",
+                              "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
+                              "galleryEndpointUrl": "https://gallery.azure.com/",
+                              "managementEndpointUrl": "https://management.core.windows.net/"
+                              }'
+        uses: azure/login@v1
+        with:
+          # To be changed if AZURE_CREDS can be added as github secret
+          creds: ${{ env.AZURE_CREDENTIALS }}
+          #creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
