@@ -43,7 +43,7 @@ jobs:
           echo "LOCATION=westeurope" >> $GITHUB_ENV
           echo "KEYVAULT_NAME=ffkv" >> $GITHUB_ENV
           echo "RESOURCE_GROUP=DevOps_BenchTesting_MA_Jun21" >> $GITHUB_ENV
-          echo "USER=az account show | jq '.user.name'" >> $GITHUB_ENV
+          #echo "USER=az account show | jq '.user.name'" >> $GITHUB_ENV
         
       - uses: azure/CLI@v1
         with:
@@ -53,9 +53,10 @@ jobs:
             az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
             #az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId' >> $GITHUB_ENV
             #az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --upn myApp
+            echo "OBJECT_ID=az keyvault list | jq '.[0].properties.accessPolicies[0].objectId'" >> $GITHUB_ENV
 
       - run: |
-          echo "OBJECT_ID=az keyvault list | jq '.[0].properties.accessPolicies[0].objectId'" >> $GITHUB_ENV
+          echo $GITHUB_ENV
 
       - uses: azure/CLI@v1
         with:
