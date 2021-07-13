@@ -50,7 +50,7 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             az account show
-            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
+            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --enable-soft-delete true
             #az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId' >> $GITHUB_ENV
             #az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --key-permissions create decrypt delete encrypt get import list purge recover restore update verify --upn myApp
             echo "OBJECT_ID=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
