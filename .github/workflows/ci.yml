@@ -18,10 +18,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - run: |
-          #echo "NDATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-          #echo "MATRIXVERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
-          #echo "JOB_ID=${{ env.GITHUB_RUN_ID }}" >> $GITHUB_ENV
-          echo "AZURE_KV_NAME=kv-${{ env.GITHUB_RUN_ID }}-${{ matrix.node-version }}" >> $GITHUB_ENV
+          echo "AZURE_KV_NAME=kv-${{ github.run_id }}-${{ matrix.node-version }}" >> $GITHUB_ENV
           echo "LOCATION=westeurope" >> $GITHUB_ENV
         
       - uses: azure/CLI@v1
