@@ -26,7 +26,8 @@ jobs:
           #creds: ${{ env.AZURE_CREDENTIALS }}
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - run: |
-          echo "NDATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+          #echo "NDATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+          echo "NDATE=$(date +'%H%M%S')" >> $GITHUB_ENV
           # To be removed if all ENV variables can be added as github secret
           echo "LOCATION=westeurope" >> $GITHUB_ENV
         
