@@ -1,6 +1,5 @@
 ---
 name: CI
-# Commenting out to add workflow dispatch
 on: [push, pull_request]
 jobs:
   build:
@@ -19,8 +18,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - run: |
-          echo "NDATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-          echo "AZURE_KV_NAME=kv" >> $GITHUB_ENV
+          #echo "NDATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+          #echo "MATRIXVERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
+          #echo "JOB_ID=${{ env.GITHUB_RUN_ID }}" >> $GITHUB_ENV
+          echo "AZURE_KV_NAME=kv-${{ env.GITHUB_RUN_ID }}-${{ matrix.node-version }}" >> $GITHUB_ENV
           echo "LOCATION=westeurope" >> $GITHUB_ENV
         
       - uses: azure/CLI@v1
@@ -28,7 +29,7 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             az account show
-            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.AZURE_KV_NAME }}-${{ env.NDATE }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --enable-soft-delete true
+            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --enable-soft-delete true
             echo "OBJECT_ID=$(az keyvault list --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
 
       - uses: azure/CLI@v1
@@ -36,17 +37,17 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             # set keyvault policies
-            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }}-${{ env.NDATE }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
             # set secret policies
-            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }}-${{ env.NDATE }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
             # set certificates policies
-            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }}-${{ env.NDATE }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
 
       - env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          AZURE_VAULT_NAME: ${{ env.AZURE_KV_NAME }}-${{ env.NDATE }}
+          AZURE_VAULT_NAME: ${{ env.AZURE_KV_NAME }}
         run: npm run test:ci
         continue-on-error: true
 
@@ -54,7 +55,7 @@ jobs:
         with:
           azcliversion: 2.0.72
           inlineScript: |
-            az keyvault delete --name ${{ env.AZURE_KV_NAME }}-${{ env.NDATE }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }}
+            az keyvault delete --name ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }}
             # The delete secret action should be removed from the npm and let the azure CLI take care of it, we can add the option --no-wait if needed
             #--no-wait
 
