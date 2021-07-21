@@ -9,7 +9,8 @@ jobs:
         node-version: [12, 14, 16]
     env:
       AZURE_KV_NAME: "kv-${{ github.run_id }}-${{ matrix.node-version }}"
-      LOCATION: "westeurope"
+      AZURE_DEFAULTS_GROUP: "${{ secrets.KEYVAULT_RESOURCE_GROUP }}"
+      AZURE_DEFAULTS_LOCATION: "westeurope"
     steps:
       - uses: actions/checkout@v2.3.4
       - uses: actions/setup-node@v2.2.0
@@ -25,18 +26,18 @@ jobs:
         with:
           inlineScript: |
             az account show
-            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --enable-soft-delete true
-            echo "OBJECT_ID=$(az keyvault list --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
+            az keyvault create --name ${{ env.AZURE_KV_NAME }} --enable-soft-delete true
+            echo "OBJECT_ID=$(az keyvault list | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
 
       - uses: azure/CLI@v1
         with:
           inlineScript: |
             # set keyvault policies
-            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
             # set secret policies
-            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
             # set certificates policies
-            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
 
       - env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -48,7 +49,7 @@ jobs:
       - uses: azure/CLI@v1
         with:
           inlineScript: |
-            az keyvault delete --name ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }}
+            az keyvault delete --name ${{ env.AZURE_KV_NAME }}
             # The delete secret action should be removed from the npm and let the azure CLI take care of it, we can add the option --no-wait if needed
             #--no-wait
 
