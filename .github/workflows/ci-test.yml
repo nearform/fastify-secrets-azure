@@ -20,70 +20,56 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run lint
-      - env:
-          # To be removed if AZURE_CREDS can be added as github secret
-          AZURE_CREDENTIALS: '{
-                              "clientId": "4af8af72-ce1a-440b-a41c-cee649199449",
-                              "clientSecret": "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O",
-                              "subscriptionId": "7d149fba-cc81-4bab-8461-ea09919d78cd",
-                              "tenantId": "8dcc1c85-50c8-41bb-ba73-be0bf36f827f",
-                              "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
-                              "resourceManagerEndpointUrl": "https://management.azure.com/",
-                              "activeDirectoryGraphResourceId": "https://graph.windows.net/",
-                              "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
-                              "galleryEndpointUrl": "https://gallery.azure.com/",
-                              "managementEndpointUrl": "https://management.core.windows.net/"
-                              }'
-        uses: azure/login@v1
+      - uses: azure/login@v1
         with:
           # To be changed if AZURE_CREDS can be added as github secret
-          creds: ${{ env.AZURE_CREDENTIALS }}
-          #creds: ${{ secrets.AZURE_CREDENTIALS }}
+          #creds: ${{ env.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - run: |
           echo "NDATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
           # To be removed if all ENV variables can be added as github secret
           echo "LOCATION=westeurope" >> $GITHUB_ENV
-          echo "KEYVAULT_NAME=ffkv" >> $GITHUB_ENV
-          echo "RESOURCE_GROUP=DevOps_BenchTesting_MA_Jun21" >> $GITHUB_ENV
-          #echo "USER=az account show | jq '.user.name'" >> $GITHUB_ENV
         
-      - uses: azure/CLI@v1
+      - env:
+        AZURE_VAULT_NAME: ${{ secrets.AZURE_VAULT_NAME }}-${{ env.NDATE }}
+        uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
             az account show
-            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --enable-soft-delete true 
+            az keyvault create --location ${{ env.LOCATION }} --name ${{ env.AZURE_VAULT_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --enable-soft-delete true 
             #--retention-days 7
-            echo "OBJECT_ID=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
+            echo "OBJECT_ID=$(az keyvault list --resource-group ${{ secrets.RESOURCE_GROUP }} | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
 
-      - uses: azure/CLI@v1
+      - env:
+        AZURE_VAULT_NAME: ${{ secrets.AZURE_VAULT_NAME }}-${{ env.NDATE }}
+        uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
             # set keyvault policies
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
             # set secret policies
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
             # set certificates policies
-            az keyvault set-policy -n ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
+            az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
 
       - env:
           # To be changed by ${{ secret...... }}
-          AZURE_TENANT_ID: "8dcc1c85-50c8-41bb-ba73-be0bf36f827f"
-          AZURE_CLIENT_ID: "4af8af72-ce1a-440b-a41c-cee649199449"
-          AZURE_CLIENT_SECRET: "mwxApLXmmJZa11qphZjJs.SMkMPNFvR_9O"
-          AZURE_VAULT_NAME: ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_VAULT_NAME: ${{ secrets.AZURE_VAULT_NAME }}-${{ env.NDATE }}
         run: npm run test:ci
 
-      - uses: azure/CLI@v1
+      - env:
+        AZURE_VAULT_NAME: ${{ secrets.AZURE_VAULT_NAME }}-${{ env.NDATE }}
+        uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
-            az keyvault delete --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --resource-group ${{ env.RESOURCE_GROUP }}
-            # Since the npm script purges the secret, this is not required unless purge action is removed from npm job
-            # purge is not allowed, my account does not have deletedVaults Read permission, we can try to enable it for the npm script or just delete the keyvault and 7 days later it will be purged automatically
-            #az keyvault purge --name ${{ env.KEYVAULT_NAME }}-${{ env.NDATE }} --location ${{ env.LOCATION }}
-            # The delete keyvault action should be removed from the npm and let the azure CLI take care of it, we can add the option --no-wait if needed
+            az keyvault delete --name ${{ env.AZURE_VAULT_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }}
+            # The delete secret action should be removed from the npm and let the azure CLI take care of it, we can add the option --no-wait if needed
             #--no-wait
 
   automerge:
