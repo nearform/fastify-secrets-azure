@@ -7,6 +7,9 @@ jobs:
     strategy:
       matrix:
         node-version: [12, 14, 16]
+    env:
+      AZURE_KV_NAME: "kv-${{ github.run_id }}-${{ matrix.node-version }}"
+      LOCATION: "westeurope"
     steps:
       - uses: actions/checkout@v2.3.4
       - uses: actions/setup-node@v2.2.0
@@ -17,9 +20,6 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: |
-          echo "AZURE_KV_NAME=kv-${{ github.run_id }}-${{ matrix.node-version }}" >> $GITHUB_ENV
-          echo "LOCATION=westeurope" >> $GITHUB_ENV
         
       - uses: azure/CLI@v1
         with:
