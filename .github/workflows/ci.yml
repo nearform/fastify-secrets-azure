@@ -50,8 +50,6 @@ jobs:
         with:
           inlineScript: |
             az keyvault delete --name ${{ env.AZURE_KV_NAME }}
-            # The delete secret action should be removed from the npm and let the azure CLI take care of it, we can add the option --no-wait if needed
-            #--no-wait
 
   automerge:
     needs: build
