@@ -23,7 +23,6 @@ jobs:
         
       - uses: azure/CLI@v1
         with:
-          azcliversion: latest
           inlineScript: |
             az account show
             az keyvault create --location ${{ env.LOCATION }} --name ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --enable-soft-delete true
@@ -31,7 +30,6 @@ jobs:
 
       - uses: azure/CLI@v1
         with:
-          azcliversion: latest
           inlineScript: |
             # set keyvault policies
             az keyvault set-policy -n ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
@@ -49,7 +47,6 @@ jobs:
 
       - uses: azure/CLI@v1
         with:
-          azcliversion: latest
           inlineScript: |
             az keyvault delete --name ${{ env.AZURE_KV_NAME }} --resource-group ${{ secrets.KEYVAULT_RESOURCE_GROUP }}
             # The delete secret action should be removed from the npm and let the azure CLI take care of it, we can add the option --no-wait if needed
