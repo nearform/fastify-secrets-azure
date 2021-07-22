@@ -2,7 +2,7 @@
 
 require('dotenv').config()
 
-const { test, teardown } = require('tap')
+const { test } = require('tap')
 const uuid = require('uuid')
 const Fastify = require('fastify')
 const { DefaultAzureCredential } = require('@azure/identity')
@@ -23,12 +23,6 @@ const client = new SecretClient(
 function createSecret() {
   return client.setSecret(SECRET_NAME, SECRET_CONTENT)
 }
-
-teardown(async function deleteSecret() {
-  const poller = await client.beginDeleteSecret(SECRET_NAME)
-  await poller.pollUntilDone()
-  await client.purgeDeletedSecret(SECRET_NAME)
-})
 
 test('integration', async (t) => {
   t.test('decorates fastify with secret content', async (t) => {
