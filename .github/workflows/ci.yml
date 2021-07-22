@@ -26,7 +26,7 @@ jobs:
         with:
           inlineScript: |
             az account show
-            az keyvault create --name ${{ env.AZURE_KV_NAME }} --enable-soft-delete true
+            az keyvault create --name ${{ env.AZURE_KV_NAME }}
             echo "OBJECT_ID=$(az keyvault list | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
 
       - uses: azure/CLI@v1
