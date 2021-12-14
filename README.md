@@ -1,6 +1,6 @@
 # Fastify Secrets Azure
 
-![CI](https://github.com/nearform/fastify-secrets-azure/workflows/CI/badge.svg)
+![ci](https://github.com/nearform/fastify-secrets-azure/workflows/CI/badge.svg)
 
 Fastify secrets plugin for [Azure Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/).
 
