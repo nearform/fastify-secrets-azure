@@ -21,7 +21,7 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
+
       - uses: azure/CLI@v1
         with:
           inlineScript: |
@@ -46,17 +46,17 @@ jobs:
         run: npm run test:ci
         continue-on-error: true
 
-      - uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az keyvault delete --name ${{ env.AZURE_VAULT_NAME }}
+      # - uses: azure/CLI@v1
+      #   with:
+      #     inlineScript: |
+      #       az keyvault delete --name ${{ env.AZURE_VAULT_NAME }}
 
   automerge:
     needs: build
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      contents: write       
+      contents: write
     steps:
       - uses: fastify/github-action-merge-dependabot@v3
         with:
