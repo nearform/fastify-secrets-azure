@@ -58,6 +58,6 @@
   "dependencies": {
     "@azure/identity": "^2.0.1",
     "@azure/keyvault-secrets": "^4.1.0",
-    "fastify-secrets-core": "^1.1.0"
+    "fastify-secrets-core": "^2.0.0"
   }
 }
