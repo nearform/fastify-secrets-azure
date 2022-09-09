@@ -1,6 +1,6 @@
 name: ci
 on:
-  push: null
+  push:
   pull_request:
     branches:
       - master
@@ -28,7 +28,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: azure/CLI@v1
         with:
-          inlineScript: >
+          inlineScript: |
             az account show
 
             az keyvault create --name ${{ env.AZURE_VAULT_NAME }}
@@ -36,7 +36,7 @@ jobs:
             echo "OBJECT_ID=$(az keyvault list | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
       - uses: azure/CLI@v1
         with:
-          inlineScript: >
+          inlineScript: |
             # set keyvault policies
 
             az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
