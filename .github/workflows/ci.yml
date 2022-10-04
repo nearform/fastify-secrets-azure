@@ -9,9 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version-file: .nvmrc
+        node-version:
           - 14
           - 16
+          - 18
     env:
       AZURE_VAULT_NAME: kv${{ github.run_id }}-${{ matrix.node-version }}
       AZURE_DEFAULTS_GROUP: ${{ secrets.KEYVAULT_RESOURCE_GROUP }}
