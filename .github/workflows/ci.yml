@@ -8,6 +8,9 @@ on:
       - master
 jobs:
   build:
+    permissions:
+      id-token: write
+      contents: read
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -16,19 +19,22 @@ jobs:
           - 16
           - 18
     env:
-      AZURE_VAULT_NAME: kv${{ github.run_id }}-${{ matrix.node-version }}
+      AZURE_VAULT_NAME: kv${{ github.run_id }}-${{ matrix.node-version }}-${{ github.run_attempt }}
       AZURE_DEFAULTS_GROUP: ${{ secrets.KEYVAULT_RESOURCE_GROUP }}
       AZURE_DEFAULTS_LOCATION: westeurope
     steps:
+      - name: Log in with Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run lint
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: azure/CLI@v1
         with:
           inlineScript: |
@@ -51,11 +57,7 @@ jobs:
             # set certificates policies
 
             az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
-      - env:
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        run: npm run test:ci
+      - run: npm run test:ci
       - uses: azure/CLI@v1
         if: ${{ always() }}
         with:
