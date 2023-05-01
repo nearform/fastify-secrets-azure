@@ -19,7 +19,7 @@ jobs:
           - 16
           - 18
     env:
-      AZURE_VAULT_NAME: kv${{ github.run_id }}-${{ matrix.node-version }}
+      AZURE_VAULT_NAME: kv${{ github.run_id }}-${{ matrix.node-version }}-${{ github.run_attempt }}
       AZURE_DEFAULTS_GROUP: ${{ secrets.KEYVAULT_RESOURCE_GROUP }}
       AZURE_DEFAULTS_LOCATION: westeurope
     steps:
