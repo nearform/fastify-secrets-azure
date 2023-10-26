@@ -1,6 +1,6 @@
 {
   "name": "fastify-secrets-azure",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Fastify secrets plugin for Azure Key Vault",
   "main": "lib/fastify-secrets-azure.js",
   "scripts": {
@@ -17,7 +17,12 @@
   },
   "author": "NearForm Ltd",
   "license": "Apache-2.0",
-  "keywords": ["fastify", "secrets", "azure", "keyvault"],
+  "keywords": [
+    "fastify",
+    "secrets",
+    "azure",
+    "keyvault"
+  ],
   "bugs": {
     "url": "https://github.com/nearform/fastify-secrets-azure/issues"
   },
@@ -44,7 +49,10 @@
     "uuid": "^9.0.0"
   },
   "lint-staged": {
-    "*.js": ["eslint --fix", "prettier --write"]
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@azure/identity": "^3.0.0",
