@@ -1,6 +1,6 @@
 {
   "name": "fastify-secrets-azure",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Fastify secrets plugin for Azure Key Vault",
   "main": "lib/fastify-secrets-azure.js",
   "scripts": {
