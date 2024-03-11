@@ -35,7 +35,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run lint
-      - uses: azure/CLI@v1
+      - uses: azure/CLI@v2
         with:
           inlineScript: |
             az account show
@@ -43,7 +43,7 @@ jobs:
             az keyvault create --name ${{ env.AZURE_VAULT_NAME }}
 
             echo "OBJECT_ID=$(az keyvault list | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
-      - uses: azure/CLI@v1
+      - uses: azure/CLI@v2
         with:
           inlineScript: |
             # set keyvault policies
@@ -58,7 +58,7 @@ jobs:
 
             az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
       - run: npm run test:ci
-      - uses: azure/CLI@v1
+      - uses: azure/CLI@v2
         if: ${{ always() }}
         with:
           inlineScript: |
