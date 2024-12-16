@@ -2,7 +2,7 @@
 
 require('dotenv').config()
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const uuid = require('uuid')
 const Fastify = require('fastify')
 const { DefaultAzureCredential } = require('@azure/identity')
@@ -43,8 +43,6 @@ test('integration', async (t) => {
 
     await fastify.ready()
 
-    t.has(fastify.secrets, {
-      test: SECRET_CONTENT
-    })
+    t.assert.deepStrictEqual(fastify.secrets.test, SECRET_CONTENT)
   })
 })

@@ -1,6 +1,6 @@
 'use strict'
 
-const { test, beforeEach } = require('tap')
+const { test, beforeEach } = require('node:test')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
@@ -34,7 +34,7 @@ beforeEach(async () => {
 
 test('options', async (t) => {
   t.test('throws when vaultName is not provided', async (t) => {
-    t.throws(() => new AzureClient(), /`vaultName` is required/)
+    t.assert.throws(() => new AzureClient(), /`vaultName` is required/)
   })
 
   t.test('uses vaultName when provided', async () => {
@@ -53,7 +53,7 @@ test('options', async (t) => {
 
     const creds = secretClientStub.firstCall.args[1]
 
-    t.same(creds, defaultAzureCredentialInstance)
+    t.assert.strictEqual(creds, defaultAzureCredentialInstance)
   })
 
   t.test('uses provided credentials', async (t) => {
@@ -62,15 +62,15 @@ test('options', async (t) => {
       clientId: 'clientId',
       clientSecret: 'clientSecret'
     }
-    // eslint-disable-next-line no-unused-vars
-    const _ = new AzureClient({
+
+    new AzureClient({
       vaultName: 'vault-name',
       credentials
     })
 
     const creds = secretClientStub.firstCall.args[1]
 
-    t.same(creds, clientSecretCredentialInstance)
+    t.assert.strictEqual(creds, clientSecretCredentialInstance)
 
     sinon.assert.calledWith(
       clientSecretCredentialStub,
@@ -97,7 +97,7 @@ test('get', async (t) => {
 
     sinon.assert.called(getSecret)
     sinon.assert.calledWith(getSecret, 'secret-name')
-    t.same(secret, 'secret-value')
+    t.assert.strictEqual(secret, 'secret-value')
   })
 
   t.test('sdk error', async (t) => {
@@ -108,6 +108,6 @@ test('get', async (t) => {
 
     const promise = client.get('secret/name')
 
-    await t.rejects(promise, 'throws error')
+    await t.assert.rejects(promise, 'throws error')
   })
 })
