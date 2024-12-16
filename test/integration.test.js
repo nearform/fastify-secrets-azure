@@ -2,7 +2,8 @@
 
 require('dotenv').config()
 
-const { test } = require('node:test')
+const { test, describe } = require('node:test')
+
 const uuid = require('uuid')
 const Fastify = require('fastify')
 const { DefaultAzureCredential } = require('@azure/identity')
@@ -24,8 +25,8 @@ function createSecret() {
   return client.setSecret(SECRET_NAME, SECRET_CONTENT)
 }
 
-test('integration', async (t) => {
-  t.test('decorates fastify with secret content', async (t) => {
+describe('integration', () => {
+  test('decorates fastify with secret content', async (t) => {
     await createSecret()
 
     const fastify = Fastify({
