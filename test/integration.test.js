@@ -3,16 +3,16 @@
 require('dotenv').config()
 
 const { test, describe } = require('node:test')
+const { randomUUID } = require('node:crypto')
 
-const uuid = require('uuid')
 const Fastify = require('fastify')
 const { DefaultAzureCredential } = require('@azure/identity')
 const { SecretClient } = require('@azure/keyvault-secrets')
 
 const FastifySecrets = require('../')
 
-const SECRET_NAME = uuid.v4()
-const SECRET_CONTENT = uuid.v4()
+const SECRET_NAME = randomUUID()
+const SECRET_CONTENT = randomUUID()
 const vaultName = process.env.AZURE_VAULT_NAME
 
 const credential = new DefaultAzureCredential()
