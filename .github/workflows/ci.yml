@@ -15,9 +15,8 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 14
-          - 16
-          - 18
+          - 20
+          - 22
     env:
       AZURE_VAULT_NAME: kv${{ github.run_id }}-${{ matrix.node-version }}-${{ github.run_attempt }}
       AZURE_DEFAULTS_GROUP: ${{ secrets.KEYVAULT_RESOURCE_GROUP }}
@@ -57,7 +56,7 @@ jobs:
             # set certificates policies
 
             az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
-      - run: npm run test:ci
+      - run: npm run test
       - uses: azure/CLI@v2
         if: ${{ always() }}
         with:

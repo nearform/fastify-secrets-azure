@@ -1,6 +1,7 @@
 'use strict'
 
-const { test, beforeEach } = require('tap')
+const { test, beforeEach, describe } = require('node:test')
+
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
@@ -32,12 +33,12 @@ beforeEach(async () => {
   clientSecretCredentialStub.returns(clientSecretCredentialInstance)
 })
 
-test('options', async (t) => {
-  t.test('throws when vaultName is not provided', async (t) => {
-    t.throws(() => new AzureClient(), /`vaultName` is required/)
+describe('options', () => {
+  test('throws when vaultName is not provided', async (t) => {
+    t.assert.throws(() => new AzureClient(), /`vaultName` is required/)
   })
 
-  t.test('uses vaultName when provided', async () => {
+  test('uses vaultName when provided', async () => {
     // eslint-disable-next-line no-unused-vars
     const _ = new AzureClient({ vaultName: 'vault-name' })
 
@@ -47,21 +48,22 @@ test('options', async (t) => {
     )
   })
 
-  t.test('uses default credentials when no credentials provided', async (t) => {
+  test('uses default credentials when no credentials provided', async (t) => {
     // eslint-disable-next-line no-unused-vars
     const _ = new AzureClient({ vaultName: 'vault-name' })
 
     const creds = secretClientStub.firstCall.args[1]
 
-    t.same(creds, defaultAzureCredentialInstance)
+    t.assert.strictEqual(creds, defaultAzureCredentialInstance)
   })
 
-  t.test('uses provided credentials', async (t) => {
+  test('uses provided credentials', async (t) => {
     const credentials = {
       tenantId: 'tenantId',
       clientId: 'clientId',
       clientSecret: 'clientSecret'
     }
+
     // eslint-disable-next-line no-unused-vars
     const _ = new AzureClient({
       vaultName: 'vault-name',
@@ -70,7 +72,7 @@ test('options', async (t) => {
 
     const creds = secretClientStub.firstCall.args[1]
 
-    t.same(creds, clientSecretCredentialInstance)
+    t.assert.strictEqual(creds, clientSecretCredentialInstance)
 
     sinon.assert.calledWith(
       clientSecretCredentialStub,
@@ -81,8 +83,8 @@ test('options', async (t) => {
   })
 })
 
-test('get', async (t) => {
-  t.test('secret', async (t) => {
+describe('get', () => {
+  test('secret', async (t) => {
     const getSecret = sinon.stub()
 
     secretClientStub.returns({
@@ -97,10 +99,10 @@ test('get', async (t) => {
 
     sinon.assert.called(getSecret)
     sinon.assert.calledWith(getSecret, 'secret-name')
-    t.same(secret, 'secret-value')
+    t.assert.strictEqual(secret, 'secret-value')
   })
 
-  t.test('sdk error', async (t) => {
+  test('sdk error', async (t) => {
     secretClientStub.returns({
       getSecret: sinon.stub().rejects(new Error())
     })
@@ -108,6 +110,6 @@ test('get', async (t) => {
 
     const promise = client.get('secret/name')
 
-    await t.rejects(promise, 'throws error')
+    await t.assert.rejects(promise, 'throws error')
   })
 })
