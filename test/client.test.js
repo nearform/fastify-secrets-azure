@@ -1,63 +1,75 @@
 'use strict'
 
-const { test, beforeEach, describe } = require('node:test')
+const { test, beforeEach, describe, mock } = require('node:test')
 
-const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-const secretClientStub = sinon.stub()
-const defaultAzureCredentialInstance = sinon.stub()
-const clientSecretCredentialInstance = sinon.stub()
-const defaultAzureCredentialStub = sinon.stub()
-const clientSecretCredentialStub = sinon.stub()
-
-const AzureClient = proxyquire('../lib/client', {
-  '@azure/identity': {
-    DefaultAzureCredential: function () {
-      return defaultAzureCredentialStub()
-    },
-    ClientSecretCredential: function (...args) {
-      return clientSecretCredentialStub(...args)
-    }
-  },
-  '@azure/keyvault-secrets': {
-    SecretClient: function (...args) {
-      return secretClientStub(...args)
-    }
-  }
-})
+let secretClientStub
+let defaultAzureCredentialInstance
+let clientSecretCredentialInstance
+let defaultAzureCredentialStub
+let clientSecretCredentialStub
+let AzureClient
 
 beforeEach(async () => {
-  sinon.reset()
-  defaultAzureCredentialStub.returns(defaultAzureCredentialInstance)
-  clientSecretCredentialStub.returns(clientSecretCredentialInstance)
+  mock.reset()
+
+  secretClientStub = mock.fn()
+  defaultAzureCredentialInstance = mock.fn()
+  clientSecretCredentialInstance = mock.fn()
+  defaultAzureCredentialStub = mock.fn()
+  clientSecretCredentialStub = mock.fn()
+
+  defaultAzureCredentialStub.mock.mockImplementation(
+    () => defaultAzureCredentialInstance
+  )
+  clientSecretCredentialStub.mock.mockImplementation(
+    () => clientSecretCredentialInstance
+  )
+
+  AzureClient = proxyquire('../lib/client', {
+    '@azure/identity': {
+      DefaultAzureCredential: function () {
+        return defaultAzureCredentialStub()
+      },
+      ClientSecretCredential: function (...args) {
+        return clientSecretCredentialStub(...args)
+      }
+    },
+    '@azure/keyvault-secrets': {
+      SecretClient: function (...args) {
+        return secretClientStub(...args)
+      }
+    }
+  })
 })
 
 describe('options', () => {
-  test('throws when vaultName is not provided', async (t) => {
+  test('throws when vaultName is not provided', (t) => {
     t.assert.throws(() => new AzureClient(), /`vaultName` is required/)
   })
 
-  test('uses vaultName when provided', async () => {
+  test('uses vaultName when provided', (t) => {
     // eslint-disable-next-line no-unused-vars
     const _ = new AzureClient({ vaultName: 'vault-name' })
 
-    sinon.assert.calledWith(
-      secretClientStub,
+    t.assert.strictEqual(secretClientStub.mock.callCount(), 1)
+    t.assert.strictEqual(
+      secretClientStub.mock.calls[0].arguments[0],
       `https://vault-name.vault.azure.net`
     )
   })
 
-  test('uses default credentials when no credentials provided', async (t) => {
+  test('uses default credentials when no credentials provided', (t) => {
     // eslint-disable-next-line no-unused-vars
     const _ = new AzureClient({ vaultName: 'vault-name' })
 
-    const creds = secretClientStub.firstCall.args[1]
+    const creds = secretClientStub.mock.calls[0].arguments[1]
 
     t.assert.strictEqual(creds, defaultAzureCredentialInstance)
   })
 
-  test('uses provided credentials', async (t) => {
+  test('uses provided credentials', (t) => {
     const credentials = {
       tenantId: 'tenantId',
       clientId: 'clientId',
@@ -70,42 +82,41 @@ describe('options', () => {
       credentials
     })
 
-    const creds = secretClientStub.firstCall.args[1]
+    const creds = secretClientStub.mock.calls[0].arguments[1]
 
-    t.assert.strictEqual(creds, clientSecretCredentialInstance)
-
-    sinon.assert.calledWith(
-      clientSecretCredentialStub,
-      credentials.tenantId,
-      credentials.clientId,
-      credentials.clientSecret
+    t.assert.deepEqual(creds, clientSecretCredentialInstance)
+    t.assert.deepStrictEqual(
+      clientSecretCredentialStub.mock.calls[0].arguments,
+      [credentials.tenantId, credentials.clientId, credentials.clientSecret]
     )
   })
 })
 
 describe('get', () => {
   test('secret', async (t) => {
-    const getSecret = sinon.stub()
+    const getSecret = t.mock.fn()
 
-    secretClientStub.returns({
+    secretClientStub.mock.mockImplementation(() => ({
       getSecret
-    })
+    }))
 
     const client = new AzureClient({ vaultName: 'vault-name' })
 
-    getSecret.resolves({ value: 'secret-value' })
+    getSecret.mock.mockImplementation(() =>
+      Promise.resolve({ value: 'secret-value' })
+    )
 
     const secret = await client.get('secret-name')
 
-    sinon.assert.called(getSecret)
-    sinon.assert.calledWith(getSecret, 'secret-name')
+    t.assert.strictEqual(getSecret.mock.callCount(), 1)
+    t.assert.strictEqual(getSecret.mock.calls[0].arguments[0], 'secret-name')
     t.assert.strictEqual(secret, 'secret-value')
   })
 
   test('sdk error', async (t) => {
-    secretClientStub.returns({
-      getSecret: sinon.stub().rejects(new Error())
-    })
+    secretClientStub.mock.mockImplementation(() => ({
+      getSecret: t.mock.fn(() => Promise.reject(new Error()))
+    }))
     const client = new AzureClient({ vaultName: 'vault-name' })
 
     const promise = client.get('secret/name')
