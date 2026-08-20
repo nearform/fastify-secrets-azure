@@ -30,7 +30,7 @@
     "node": ">= 20"
   },
   "devDependencies": {
-    "dotenv": "^16.4.7",
+    "dotenv": "^17.4.2",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
