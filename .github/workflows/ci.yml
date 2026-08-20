@@ -35,7 +35,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run lint
-      - uses: azure/CLI@v2
+      - uses: azure/CLI@v3
         with:
           inlineScript: |
             az account show
@@ -45,7 +45,7 @@ jobs:
             # with a full self-policy for the CI service principal.
             az keyvault create --name ${{ env.AZURE_VAULT_NAME }} --enable-rbac-authorization false
       - run: npm run test
-      - uses: azure/CLI@v2
+      - uses: azure/CLI@v3
         if: ${{ always() }}
         with:
           inlineScript: |
