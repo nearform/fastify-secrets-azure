@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/nearform/fastify-secrets-azure#readme",
   "engines": {
-    "node": ">= 22"
+    "node": ">= 20"
   },
   "devDependencies": {
     "dotenv": "^16.4.7",
