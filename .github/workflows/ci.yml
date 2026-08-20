@@ -13,6 +13,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version:
           - 20
@@ -39,23 +40,10 @@ jobs:
           inlineScript: |
             az account show
 
-            az keyvault create --name ${{ env.AZURE_VAULT_NAME }}
-
-            echo "OBJECT_ID=$(az keyvault list | jq '.[0].properties.accessPolicies[0].objectId')" >> $GITHUB_ENV
-      - uses: azure/CLI@v2
-        with:
-          inlineScript: |
-            # set keyvault policies
-
-            az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey --object-id ${{ env.OBJECT_ID }}
-
-            # set secret policies
-
-            az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --secret-permissions backup delete get list purge recover restore set --object-id ${{ env.OBJECT_ID }}
-
-            # set certificates policies
-
-            az keyvault set-policy -n ${{ env.AZURE_VAULT_NAME }} --certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update --object-id ${{ env.OBJECT_ID }}
+            # `az keyvault create` defaults to RBAC authorization, which rejects
+            # access policies. Opt back into access policies so the vault is created
+            # with a full self-policy for the CI service principal.
+            az keyvault create --name ${{ env.AZURE_VAULT_NAME }} --enable-rbac-authorization false
       - run: npm run test
       - uses: azure/CLI@v2
         if: ${{ always() }}
